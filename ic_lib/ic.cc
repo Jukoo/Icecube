@@ -72,7 +72,47 @@ void  cursor_filter  (std::string cursor , int &line_count)   {
       std::cout<<"Out [" << line_count << "]: "<<result_display << std::endl ; 
 } 
 
+static  
+void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
+    if (!r_file) { 
+        std::cerr <<  mesg << std::endl; 
+        exit(RW_FLUX_ERR) ; 
+    }
+}
+
+static  
+void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
+    if (!w_file) { 
+        std::cerr <<  mesg << std::endl; 
+        exit(RW_FLUX_ERR) ; 
+    }
+}
+/*
+ *
+ * reading binary  file to generate
+ * the target to make the compilation 
+ */
 void  cxx_compil()  {
-    system(CXX FLASH_FILE) ;
+    std::string ffcxx {BIN_LOC_ FLASH_FILE}; 
+    int dot_pos  = ffcxx.find(".") ; 
+    std::string ffcxx_CC_ext  =  ffcxx.substr(0x00 , dot_pos) + ".cc"; 
+    std::string no_bin_prefix =  ffcxx_CC_ext.substr(ffcxx_CC_ext.find("/") ,9);
+    std::replace(no_bin_prefix.begin()  , no_bin_prefix.end() , '/' , '.') ; 
+ 
+    // read the  binary file and  pipe  
+    std::ifstream  bin_ffcxx(ffcxx  , std::ios::binary) ; 
+
+    std::ofstream  cc_ffcxx(no_bin_prefix.c_str()) ; 
+
+    Rfx_ERR(bin_ffcxx , "ic++ runtime BIN_OPERROR") ; 
+    Wfx_ERR(cc_ffcxx  , "ic++ runtime CC_OPERROR ") ;     
+   
+    std::string bin_cursor{""} ;  
+    while(bin_ffcxx) {
+        std::getline(bin_ffcxx , bin_cursor) ;  
+        if(cc_ffcxx)  cc_ffcxx <<  bin_cursor  <<std::endl; 
+    } 
+    
+    system(CXX TMPF_EXEC);
     system("./a.out") ;
 }

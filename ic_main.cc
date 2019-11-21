@@ -24,9 +24,14 @@ int main  (int argc  ,char  **argv ) {
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
     
     std::string  ic_cursor_reader {""} ;  //! cursor reader on stdout 
-    std::string const cxx_flash{FLASH_FILE} ; 
-
-    std::ofstream cxx_flux(cxx_flash.c_str()); 
+    
+    
+    std::string const cxx_flash{BIN_LOC_ FLASH_FILE} ;
+    
+    std::cout << cxx_flash << std::endl;
+    
+    // write binary file  file  
+    std::ofstream cxx_flux(cxx_flash ,  std::ios::out | std::ios::binary);  
     if (!cxx_flux) {
         std::cerr << "ic++ runtime Error" << std::endl;
         exit(IC_RUNTIME_ERROR) ; 
