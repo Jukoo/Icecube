@@ -1,8 +1,6 @@
 .ffcxx.cc
-sample.cc
+tmp/sample.cc
 a.out
-ic++
+icc
 bin/
 ffcxx.cc
-ffcxx.cc
- ffcxx.cc

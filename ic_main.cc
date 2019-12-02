@@ -15,7 +15,7 @@
 #include <string>
 #include <fstream>  
 #include <vector>
-#include "ic_lib/ic.h" 
+#include "ic.h" 
 
 
 int main  (int argc  ,char  **argv ) {
@@ -23,8 +23,7 @@ int main  (int argc  ,char  **argv ) {
     print_header_intro() ;
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
     
-    std::string  ic_cursor_reader {""} ;  //! cursor reader on stdout 
-    
+    std::string  ic_cursor_reader {""} ;  //! cursor reader on stdout  
     
     std::string const cxx_flash{BIN_LOC_ FLASH_FILE} ;
     
@@ -61,7 +60,6 @@ IC:
             i_global_container.push_back(ic_cursor_reader) ;
         } 
     }
-
     //compile section 
     cxx_compil() ;
     

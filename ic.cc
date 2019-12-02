@@ -26,7 +26,7 @@ void print_header_intro (std::string  ic_tag_version) {
 
 //! read binnary file  
 void  bin_snap(std::ofstream &ic_flux ) {
-    std::string bin_file {"sample.cc"};  
+    std::string bin_file {"tmp/sample.cc"};  
     std::ifstream bin_file_flx (bin_file) ; 
     std::string cursor {} ;  
     if(!bin_file_flx){

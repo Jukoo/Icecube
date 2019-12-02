@@ -8,6 +8,7 @@
 #define  FLASH_FILE         "ffcxx.bin"
 #define  TMPF_EXEC          ".ffcxx.cc"
 #define  A_OUT              "./a.out"
+#define  TEMP               "tmp"
 
 #define  IC_RUNTIME_ERROR   0X03 
 #define  IC_VERSION         "v0.0.1"
@@ -35,8 +36,9 @@ void  cxx_compil() ;
 static
 void Rfx_ERR(std::basic_ifstream <char> & ,
                     std::basic_string<char>) ; 
-
 static 
 void Wfx_ERR(std::basic_ofstream <char> & ,
                     std::basic_string<char>) ; 
+
+
 #endif  
