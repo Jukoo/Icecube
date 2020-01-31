@@ -5,7 +5,7 @@
 #include <map> 
 #include <vector>
 #include <regex>
-#include "ic.h" 
+#include "ic.hh" 
 
 //! print  g++  version information header   
 //! and display utils argument 
@@ -25,35 +25,46 @@ void print_header_intro (std::string  ic_tag_version) {
 } 
 
 //! read binnary file  
-void  bin_snap(std::ofstream &ic_flux ) {
-    std::string bin_file {"tmp/sample.cc"};  
-    std::ifstream bin_file_flx (bin_file) ; 
+void   pipe2read_stream(std::ofstream &cx_write_stream ) {
+    std::string  ref_file {"tmp/sample.cc"};  
+    std::ifstream cx_read_stream (ref_file) ; 
     std::string cursor {} ;  
-    if(!bin_file_flx){
+    if(!cx_read_stream)
+    {
         std::cerr  << "connot  open bin file " << std::endl;  
         exit(IC_RUNTIME_ERROR)  ; 
     } 
-    if (bin_file_flx)  {
-        // begin copy  
-        while  (bin_file_flx) {
-            std::getline(bin_file_flx, cursor) ; 
-            // pipe on  ic_flux 
-            ic_flux << cursor << std::endl;  
+    if (cx_read_stream)   
+    {
+        // pipe read stream  to write stream 
+        while  (std::getline(cx_read_stream, cursor)) 
+        {  
+            cx_write_stream << cursor << std::endl;  
         } 
     }
 }
- 
+
+
+// just  print  the  variable  affectation  
+// int x  = 0  ; 
+// ->  0  
 void  cursor_filter  (std::string cursor , int &line_count)   {
       std::vector<std::string> paterns_delimiter {"=" ,"{", "<<" ,">>"} ;
       std::vector<std::string> parse_cursor {""} ;
       std::string p_cursor {""} ; 
       int incre  {1};  
-      for  (auto patern : paterns_delimiter) {
+      
+      for  (auto patern : paterns_delimiter) 
+      {
            size_t partern_pos =  cursor.find(patern) ; 
+           
+           // continue reading  even  the space  between  
            while ( (p_cursor  =  cursor[partern_pos+incre])  == " " ) { 
                incre++ ; 
            }
-           if(p_cursor != " ") {
+
+           if(p_cursor != " ") 
+           {
                 parse_cursor.push_back(p_cursor) ;  
                 int  read_next_char {1} ; 
                 int p_cursor_pos = cursor.find(p_cursor) ; 
@@ -70,7 +81,26 @@ void  cursor_filter  (std::string cursor , int &line_count)   {
       }
       
       std::cout<<"Out [" << line_count << "]: "<<result_display << std::endl ; 
-} 
+}
+
+void  processor_directive_call( std::string cursor, std::vector<std::string>& directive) {
+   // char  hashtag = HASH_TAG_DIRECTIVE ; 
+    std::string  hashtag  =  "#"  ;  
+    std::string  directive_statement{} ; 
+    size_t  pos = cursor.find(hashtag) ;  
+    if (pos) 
+    {
+        for (size_t i = 0 ; i < cursor.size() ;  i++ ) 
+        {
+            directive_statement+=cursor[i] ; 
+        }
+    }
+        if  ( directive_statement.size() >  0x000 )  
+        { 
+            std::cout<< directive_statement << std::endl ;  
+            directive.push_back(directive_statement) ;
+        }  
+}
 
 static  
 void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
@@ -87,6 +117,7 @@ void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
         exit(RW_FLUX_ERR) ; 
     }
 }
+
 /*
  *
  * reading binary  file to generate

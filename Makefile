@@ -10,7 +10,7 @@ all : $(EXEC)
 $(EXEC): $(OBJ)
 	$(CXX)  -o $@ $^ $(CXXFLAG)  
 
-ic_main.o: ic.h
+ic_main.o: ic.hh
 
 %.o :  %.cc 
 	$(CXX) -o  $@  -c  $< $(CXXFLAG) 

@@ -1,6 +1,6 @@
-.ffcxx.cc
 tmp/sample.cc
 a.out
 icc
-bin/
-ffcxx.cc
+ic.o
+ic_main.o
+bin/ic+.bin
