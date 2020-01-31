@@ -4,3 +4,5 @@ icc
 ic.o
 ic_main.o
 bin/ic+.bin
+.ffcxx.cc
+.ic+.cc
