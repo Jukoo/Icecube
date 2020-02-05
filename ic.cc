@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <stdio.h> 
 #include <fstream> 
 #include <string>
 #include <map> 
@@ -19,37 +20,54 @@ void print_header_intro (std::string  ic_tag_version) {
     std::map<std::string , std::string>::iterator i_args_helper ; 
     for(i_args_helper = args_helper.begin () ; 
         i_args_helper !=  args_helper.end(); 
-        i_args_helper++) {
+        i_args_helper++
+        ) 
         std::cout <<  i_args_helper->first  <<" \t -- "<< i_args_helper->second << std::endl; 
-    } 
+
 } 
 
+static  
+void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
+    if (!r_file) 
+    { 
+        std::cerr <<  mesg << std::endl; 
+        exit(RW_FLUX_ERR) ; 
+    }
+}
+
+static  
+void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
+    if (!w_file) 
+    { 
+        std::cerr <<  mesg << std::endl; 
+        exit(RW_FLUX_ERR) ; 
+    }
+}
+
+
 //! read binnary file  
-void   pipe2read_stream(std::ofstream &cx_write_stream ) {
-    std::string  ref_file {"tmp/sample.cc"};  
+void init_entry_point(std::vector<std::string>& first_statement_stack) {
+    std::string  ref_file {STATMENTS_STARTUP};  
     std::ifstream cx_read_stream (ref_file) ; 
     std::string cursor {} ;  
-    if(!cx_read_stream)
+    
+    if  (cx_read_stream) 
     {
-        std::cerr  << "connot  open bin file " << std::endl;  
-        exit(IC_RUNTIME_ERROR)  ; 
-    } 
-    if (cx_read_stream)   
-    {
-        // pipe read stream  to write stream 
         while  (std::getline(cx_read_stream, cursor)) 
-        {  
-            cx_write_stream << cursor << std::endl;  
-        } 
-    }
+        { 
+            first_statement_stack.push_back(cursor) ; 
+        }
+    } 
+    
 }
 
 
 // just  print  the  variable  affectation  
 // int x  = 0  ; 
 // ->  0  
-void  cursor_filter  (std::string cursor , int &line_count)   {
-      std::vector<std::string> paterns_delimiter {"=" ,"{", "<<" ,">>"} ;
+//[]  need to perform  this   function  below ....  
+void  cursor_filter  (std::string &cursor , int &line_count)   {
+      std::vector<std::string> paterns_delimiter {"=" ,">","{", "<<" ,">>"} ;
       std::vector<std::string> parse_cursor {""} ;
       std::string p_cursor {""} ; 
       int incre  {1};  
@@ -59,10 +77,11 @@ void  cursor_filter  (std::string cursor , int &line_count)   {
            size_t partern_pos =  cursor.find(patern) ; 
            
            // continue reading  even  the space  between  
-           while ( (p_cursor  =  cursor[partern_pos+incre])  == " " ) { 
+           while ((p_cursor  =  cursor[partern_pos+incre])  == " " )
+           {  
                incre++ ; 
            }
-
+           
            if(p_cursor != " ") 
            {
                 parse_cursor.push_back(p_cursor) ;  
@@ -75,48 +94,94 @@ void  cursor_filter  (std::string cursor , int &line_count)   {
            }
            break ;  
       }  
-      std::string result_display {""} ; 
-      for (auto  each_char :  parse_cursor)  {
-          result_display+=each_char ;
-      }
       
-      std::cout<<"Out [" << line_count << "]: "<<result_display << std::endl ; 
+      std::string result_display {""} ; 
+      
+      for (auto  each_char :  parse_cursor)
+      { 
+          result_display+=each_char ;
+      } 
+      std::fprintf(stdout  , " Out [%d] %n" , result_display );  
+      //std::cout<<"Out [" << line_count << "]: "<<result_display << std::endl ; 
 }
 
-void  processor_directive_call( std::string cursor, std::vector<std::string>& directive) {
-   // char  hashtag = HASH_TAG_DIRECTIVE ; 
-    std::string  hashtag  =  "#"  ;  
+void  init_stack_preprocess_head ( std::vector <std::string >& preprocess_first_directive) {
+    
+    std::ifstream def_pp_stream {PREPROC_INCLUDE}; 
+    std::string cursor  {} ; 
+    while (  std::getline(def_pp_stream ,  cursor)) 
+    { 
+            preprocess_first_directive.push_back(cursor) ;  
+    } 
+
+}
+// detect  all  the preprocessor  declared  inside the interpreter  
+bool   processor_directive_call( std::string &cursor, std::vector<std::string>& directive) {
+    std::string  hashtag   { "#" }  ;  
     std::string  directive_statement{} ; 
     size_t  pos = cursor.find(hashtag) ;  
-    if (pos) 
+    std::string  sp  {} ; 
+    if ( (sp   =  cursor[pos] ) == hashtag) 
     {
         for (size_t i = 0 ; i < cursor.size() ;  i++ ) 
-        {
-            directive_statement+=cursor[i] ; 
-        }
-    }
-        if  ( directive_statement.size() >  0x000 )  
+            directive_statement+=cursor[i] ;
+    
+        if ( directive_statement.size() >  0x000 )
         { 
             std::cout<< directive_statement << std::endl ;  
-            directive.push_back(directive_statement) ;
+            directive.push_back(directive_statement) ; 
+            return true ; 
         }  
-}
 
-static  
-void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
-    if (!r_file) { 
-        std::cerr <<  mesg << std::endl; 
-        exit(RW_FLUX_ERR) ; 
-    }
+    }else return false  ; 
+ 
 }
+void  _records ( 
+        std::vector<std::string>&instruction  , 
+        std::vector<std::string>&directive   
+        ) 
+{
 
-static  
-void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
-    if (!w_file) { 
-        std::cerr <<  mesg << std::endl; 
-        exit(RW_FLUX_ERR) ; 
+    std::string  virtual_cursor  {} ; 
+    std::string   ice {BIN_LOC_ _MAIN_} ;
+   
+    // clear the previews record  
+    std::ofstream  previews_record_stream  ( ice.c_str()  , std::ios::out| std::ios::trunc) ;  
+    if  (!previews_record_stream) 
+    {
+        std::fprintf(stderr , "cannot truncate the previews  records ... %c" , 0x00a ) ;  
+        // force to remove   the preview record  
+        if ( remove(ice.c_str()) !=  ~-0x001)  
+            exit(EXIT_FAILURE) ; 
     }
-}
+          
+    //  std::ofstream  main_stream_record_add (ice.c_str()  , std::ios::app) ; 
+    // don't forget to flus previews record   
+     
+    std::ofstream main_stream_record(ice.c_str() , std::ios::app) ; 
+
+    if (  !main_stream_record  ) 
+    {
+        (void)fprintf(stderr ,  " ICE  broken  %s %c" ,  ice , 0x00a) ; 
+        exit(EXIT_FAILURE) ; 
+    } 
+           
+    if  ( directive.size()  >  0x00 ) 
+    {
+        for  ( auto  &i  : directive )
+            main_stream_record  << i << std::endl ; 
+    }
+             
+    if( instruction.size() > 0x00 )  
+    {
+        for(auto &i : instruction ) 
+            main_stream_record << i  << std::endl ; 
+    }
+     
+    //after catching all the  record  
+    //  call the  last  statement   
+    main_stream_record <<   RET_SYS_CALL <<  std::endl  ; 
+ }
 
 /*
  *
@@ -124,26 +189,27 @@ void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
  * the target to make the compilation 
  */
 void  cxx_compil()  {
-    std::string ffcxx {BIN_LOC_ FLASH_FILE}; 
+   /* std::string ffcxx {BIN_LOC_ FLASH_FILE}; 
     int dot_pos  = ffcxx.find(".") ; 
     std::string ffcxx_CC_ext  =  ffcxx.substr(0x00 , dot_pos) + ".cc"; 
     std::string no_bin_prefix =  ffcxx_CC_ext.substr(ffcxx_CC_ext.find("/") ,9);
     std::replace(no_bin_prefix.begin()  , no_bin_prefix.end() , '/' , '.') ; 
- 
-    // read the  binary file and  pipe  
-    std::ifstream  bin_ffcxx(ffcxx  , std::ios::binary) ; 
-
-    std::ofstream  cc_ffcxx(no_bin_prefix.c_str()) ; 
-
-    Rfx_ERR(bin_ffcxx , "ic++ runtime BIN_OPERROR") ; 
-    Wfx_ERR(cc_ffcxx  , "ic++ runtime CC_OPERROR ") ;     
-   
-    std::string bin_cursor{""} ;  
-    while(bin_ffcxx) {
-        std::getline(bin_ffcxx , bin_cursor) ;  
-        if(cc_ffcxx)  cc_ffcxx <<  bin_cursor  <<std::endl; 
-    } 
+   */  
     
-    system(CXX TMPF_EXEC);
-    system("./a.out") ;
+    
+    std::string  binexe  {  BIN_LOC_  EXEC }  ; 
+    std::ifstream  exec  (binexe.c_str())    ; 
+    if ( exec )  
+    {
+        if  ( remove(binexe.c_str()) != ~ -0x0001  ) 
+        {
+             std::fprintf(stderr ,  "Compilation  Error  \n") ; 
+             exit(EXIT_FAILURE) ; 
+        }
+    }
+    
+    
+    system(CXX   BIN_LOC_  _MAIN_  O_FLAG   BIN_LOC_  EXEC);
+    //system("./bin/a.out") ;
+    system(A_OUT EXEC) ;
 }

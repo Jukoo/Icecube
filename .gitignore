@@ -1,8 +1,8 @@
-tmp/sample.cc
 a.out
 icc
 ic.o
 ic_main.o
-bin/ic+.bin
-.ffcxx.cc
-.ic+.cc
+bin/*
+
+defsrc/*
+TODO

@@ -18,23 +18,12 @@
 #include "ic.hh" 
 
 int main  (int argc  ,char  **argv ) {
-    std::vector<std::string>  instruction_stack  ; 
-    std::vector<std::string>  directive_stack ;  
+   
+    
     print_header_intro() ;
+    
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
- 
-    std::string const  cx_file{BIN_LOC_ FLASH_FILE} ;
-    
-    std::cout << cx_file << std::endl;
-    
-    // open file  and pipe  it  to read stream  
-    // to write  the  first step  
-    std::ofstream cx_write_stream(cx_file ,  std::ios::out | std::ios::binary);  
-    if (!cx_write_stream) 
-    {
-        std::cerr << "ic++ runtime Error" << std::endl;
-        exit(IC_RUNTIME_ERROR) ; 
-    }else  pipe2read_stream(cx_write_stream);   
+  
     
     // count  line stdint  -> [ ]
     int line_count{1} ; 
@@ -42,35 +31,40 @@ int main  (int argc  ,char  **argv ) {
     std::string prompt {DEFAULT_PROMPT} ;
     std::string  ic_cursor_reader {""} ;  //! cursor reader on stdout  
 IC:
+    std::vector<std::string>  instruction_stack  ; 
+    std::vector<std::string>  directive_stack    ;  
+    init_stack_preprocess_head (directive_stack) ;  
+    init_entry_point(instruction_stack)          ; 
     while (INTERACTIVE_LOOP) 
     {
-        std::cout << prompt  << "  ["  <<  line_count << "]: " ;  
+        std::cout << prompt  << "  ["  <<  line_count << "]: " ;
+        (void) fflush( stdin) ;
         std::getline(std::cin ,  ic_cursor_reader) ; 
         if(ic_cursor_reader ==  exit_keys.QUIT || 
            ic_cursor_reader ==  exit_keys.EXIT || 
            ic_cursor_reader ==  exit_keys.BYE)  
         {
-            (void)fprintf(stdout  , "exit with Abort SIG %p  %c", &exit_keys , 0x00a)  ;    
-            //return  SIG_INTENTION ; 
-            break;  
+            std::fprintf(stdout  , "exit with Abort SIG %p  %c", &exit_keys , 0x00a)  ;    
+            exit(SIG_INTENTION) ;  
         }
         if ( ic_cursor_reader == "ret" )  
         {  
-            cx_write_stream <<  RET_SYS_CALL << std::endl;
+           // cx_write_stream <<  RET_SYS_CALL << std::endl;
+            _records(instruction_stack ,  directive_stack) ;  
+            cxx_compil()  ;  
             break ;   
         } 
-        if(cx_write_stream) 
+        
+        if (processor_directive_call(ic_cursor_reader , directive_stack ) ==0x000)  
         {
-            cx_write_stream <<ic_cursor_reader << std::endl ;  
-            cursor_filter(ic_cursor_reader ,  line_count) ;
-            processor_directive_call(ic_cursor_reader , directive_stack ) ; 
-            line_count++ ;
-           instruction_stack.push_back(ic_cursor_reader) ;
-        } 
+                //cx_write_stream <<ic_cursor_reader << std::endl ; 
+                 //cursor_filter(ic_cursor_reader ,  line_count) ;
+                 instruction_stack.push_back(ic_cursor_reader);  
+        }            
+        line_count++ ;      
+    
     }
 
-    //compile section 
-   cxx_compil() ;
    goto IC;
        
     return  EXIT_SUCCESS ;  
