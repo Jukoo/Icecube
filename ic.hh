@@ -15,7 +15,8 @@
 #define  EXEC               "freeze" 
 #define  A_OUT              "./bin/"
 
-
+#define  STDNAMESPACE_ARGS  "--using-std"
+#define  STDNAMESPACE       "using namespace std;"
 
 #define  IC_RUNTIME_ERROR   0X03 
 #define  IC_VERSION         "v0.0.1"
@@ -36,10 +37,13 @@ typedef  struct  {
     std::basic_string<char> BYE  ; 
 }ABORT_SIG  ;  
 
+void  ice_usage ( char **  ) ;  
 void  print_header_intro(std::basic_string<char>  = IC_VERSION); 
 void  init_entry_point(std::vector<std::basic_string<char>>& ); 
 void  cursor_filter (std::basic_string<char>&  ,int & ) ;
-void  init_stack_preprocess_head (std::vector <std::basic_string<char>>  & ) ; 
+void  init_stack_preprocess_head (
+        std::vector <std::basic_string<char>> & , 
+        bool&) ; 
 bool  processor_directive_call(std::basic_string <char>&, std::vector<std::basic_string<char>>&) ;
 
 void  _records (

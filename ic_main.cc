@@ -18,8 +18,22 @@
 #include "ic.hh" 
 
 int main  (int argc  ,char  **argv ) {
+   //!  arguments handler --->  
+    static bool enable_std_prefix { false } ;  
+   if ( argc == 0x0002) 
+   { 
+       std::string  args  =  argv[0x0001] ; 
+
+       if  ( args ==  STDNAMESPACE_ARGS  )
+           enable_std_prefix = true  ;   
+       
+       if  (args  ==  "--help" ||  args  == "-h" ) 
+             ice_usage(argv) ;            
+   }else if (argc  > 0x002) ice_usage (argv) ; 
+
+  //! end  arguments  hanbler  <--- 
    
-    
+   
     print_header_intro() ;
     
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
@@ -33,7 +47,7 @@ int main  (int argc  ,char  **argv ) {
 IC:
     std::vector<std::string>  instruction_stack  ; 
     std::vector<std::string>  directive_stack    ;  
-    init_stack_preprocess_head (directive_stack) ;  
+    init_stack_preprocess_head (directive_stack , enable_std_prefix) ;  
     init_entry_point(instruction_stack)          ; 
     while (INTERACTIVE_LOOP) 
     {

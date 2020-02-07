@@ -26,6 +26,19 @@ void print_header_intro (std::string  ic_tag_version) {
 
 } 
 
+void  ice_usage ( char  **argv_attribute  ) 
+{
+     std::string ice_name = argv_attribute[0x000] ;  
+     std::replace(ice_name.begin() ,  ice_name.end() , '.' , ' ' ) ; 
+     std::replace(ice_name.begin() ,  ice_name.end() , '/' , ' ') ; 
+     std::cout << "USAGE  of "  << ice_name <<std::endl ; 
+     std::cout << "arguments  available :"  <<std::endl ; 
+     std::cout << STDNAMESPACE_ARGS <<  "  ->  enable to  use  std namespace "  << std::endl ;
+    
+
+     exit(EXIT_FAILURE) ; 
+     
+}
 static  
 void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
     if (!r_file) 
@@ -60,7 +73,6 @@ void init_entry_point(std::vector<std::string>& first_statement_stack) {
     } 
     
 }
-
 
 // just  print  the  variable  affectation  
 // int x  = 0  ; 
@@ -105,7 +117,9 @@ void  cursor_filter  (std::string &cursor , int &line_count)   {
       //std::cout<<"Out [" << line_count << "]: "<<result_display << std::endl ; 
 }
 
-void  init_stack_preprocess_head ( std::vector <std::string >& preprocess_first_directive) {
+void  init_stack_preprocess_head ( 
+        std::vector <std::string >& preprocess_first_directive, 
+        bool &is_std_namespace_enable ) {
     
     std::ifstream def_pp_stream {PREPROC_INCLUDE}; 
     std::string cursor  {} ; 
@@ -113,6 +127,12 @@ void  init_stack_preprocess_head ( std::vector <std::string >& preprocess_first_
     { 
             preprocess_first_directive.push_back(cursor) ;  
     } 
+
+    if  (is_std_namespace_enable) 
+    {
+        preprocess_first_directive.push_back(STDNAMESPACE) ;             
+    }
+
 
 }
 // detect  all  the preprocessor  declared  inside the interpreter  
@@ -162,7 +182,7 @@ void  _records (
 
     if (  !main_stream_record  ) 
     {
-        (void)fprintf(stderr ,  " ICE  broken  %s %c" ,  ice , 0x00a) ; 
+        std::fprintf(stderr ,  " ICE  broken  %s %c" ,  ice , 0x00a) ; 
         exit(EXIT_FAILURE) ; 
     } 
            
