@@ -35,6 +35,8 @@ int main  (int argc  ,char  **argv ) {
    
    
     print_header_intro() ;
+    if ( enable_std_prefix ) 
+        std::cout  << "\033[1;30;47m"  <<  "using namespace std "  << "\033[0m" << std::endl; 
     
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
   
