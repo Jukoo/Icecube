@@ -3,7 +3,7 @@
 
 #include <string>
 #include <fstream>
-#include <cstdlib>
+#include <stdlib.h>
 
 #define  BIN_LOC_           "bin/"
 #define  PREPROC_INCLUDE    "defsrc/def_preproc"
@@ -28,8 +28,50 @@
 #define  RET_SYS_CALL       "return 0X00 ; }"
 #define  COMPILE            "ret"
 
-
 #define  RW_FLUX_ERR        0X03E8 
+
+
+//! colors 
+#define   COLOR_PREFIX_BEGIN "\033["  
+#define   DEFAULT_COLOR      "\033[0m" 
+
+//! font style  
+
+#define  NORMAL    0 
+#define  BOLD      1  
+#define  DARKEN    2 
+#define  ITALIC    3 
+#define  UNDERLINE 4 
+#define  BLINK     5 
+#define  REVERSE   7 
+#define  INVISIBLE 8
+#define  BARRED    9  
+
+//! font colors  
+#define  F_BLACK   30
+#define  F_RED     31
+#define  F_GREEN   32
+#define  F_YELLOW  33
+#define  F_BLUE    34
+#define  F_MAGENTA 35
+#define  F_CYAN    36
+#define  F_WHITE   37
+
+
+//! background  colors  
+#define  B_BLACK   40
+#define  B_RED     41
+#define  B_GREEN   42
+#define  B_YELLOW  43
+#define  B_BLUE    44 
+#define  B_MAGENTA 45
+#define  B_CYAN    46
+#define  B_WHITE   47  
+
+
+
+
+
 
 typedef  struct  {
     std::basic_string<char> QUIT ; 
@@ -37,7 +79,8 @@ typedef  struct  {
     std::basic_string<char> BYE  ; 
 }ABORT_SIG  ;  
 
-void  ice_usage ( char **  ) ;  
+std::string  set_colorscheme(int  cs = NORMAL ,  int fc =0x00,  int  bc= 0x00 )  ; 
+void  ice_usage ( char **  ) ; 
 void  print_header_intro(std::basic_string<char>  = IC_VERSION); 
 void  init_entry_point(std::vector<std::basic_string<char>>& ); 
 void  cursor_filter (std::basic_string<char>&  ,int & ) ;
@@ -52,7 +95,6 @@ void  _records (
         ) ; 
 
 void  cxx_compil() ; 
-
 
 
 static

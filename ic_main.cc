@@ -32,11 +32,11 @@ int main  (int argc  ,char  **argv ) {
    }else if (argc  > 0x002) ice_usage (argv) ; 
 
   //! end  arguments  hanbler  <--- 
-   
+
    
     print_header_intro() ;
     if ( enable_std_prefix ) 
-        std::cout  << "\033[1;30;47m"  <<  "using namespace std "  << "\033[0m" << std::endl; 
+        std::cout  << set_colorscheme(BLINK,0x00,  B_RED)  <<"USING NAMESPACE STD"  << DEFAULT_COLOR << std::endl; 
     
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
   

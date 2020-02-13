@@ -39,6 +39,19 @@ void  ice_usage ( char  **argv_attribute  )
      exit(EXIT_FAILURE) ; 
      
 }
+
+std::string  set_colorscheme ( int style   , int font_color  , int background_color ) {
+        
+        std::string font_style =  std::to_string(style); 
+        if  ( font_color  != 0x00 ) 
+        {  
+             return  COLOR_PREFIX_BEGIN + font_style + ";"+ std::to_string(font_color) + "m" ;  
+        }else if (background_color != 0x00 ) {
+             return  COLOR_PREFIX_BEGIN + font_style +";"+ std::to_string(background_color)+ "m" ;  
+        }else if  ( font_color != 0x00  && background_color!= 0x00) {
+            return  COLOR_PREFIX_BEGIN + font_style +";" +std::to_string(font_color) +";"+std::to_string(background_color)+ "m" ;  
+        } 
+}
 static  
 void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
     if (!r_file) 
@@ -148,7 +161,7 @@ bool   processor_directive_call( std::string &cursor, std::vector<std::string>& 
     
         if ( directive_statement.size() >  0x000 )
         { 
-            std::cout<< directive_statement << std::endl ;  
+            std::cout<<set_colorscheme(ITALIC,F_GREEN , 0X00) <<directive_statement  << DEFAULT_COLOR << std::endl ;  
             directive.push_back(directive_statement) ; 
             return true ; 
         }  
