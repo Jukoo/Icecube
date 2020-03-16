@@ -1,13 +1,14 @@
 #include <iostream>
 #include <cstdlib>
-#include <stdio.h> 
-#include <fstream> 
 #include <string>
 #include <map> 
 #include <vector>
 #include <regex>
 #include "ic.hh" 
+#include  <cstring>  
+#include <errno.h>  
 
+using namespace  std::literals  ; 
 //! print  g++  version information header   
 //! and display utils argument 
 void print_header_intro (std::string  ic_tag_version) { 

@@ -15,9 +15,22 @@
 #include <string>
 #include <fstream>  
 #include <vector>
+
+#if defined(__linux__) 
+#include  <unistd.h>
+#define   ASM_UNISTD   
+#endif 
+
+//----
 #include "ic.hh" 
 
-int main  (int argc  ,char  **argv ) {
+using namespace  std::literals ;  
+
+
+int main  (int argc  ,char  **argv )  { 
+    #if defined(ASM_UNISTD)
+        std::string  asm_header_root = ASM_H+std::to_string(ARCH_TYPE)+".h" ;
+    #endif  
    //!  arguments handler --->  
     static bool enable_std_prefix { false } ;  
    if ( argc == 0x0002) 

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <stdlib.h>
 
+#define  ARCH_TYPE   (sizeof(void* ) * 0x008)
+#define  ASM_H       "/usr/include/x86_64-linux-gnu/asm/unistd_"
 #define  BIN_LOC_           "bin/"
 #define  PREPROC_INCLUDE    "defsrc/def_preproc"
 #define  STATMENTS_STARTUP  "defsrc/statement_startup" 
@@ -68,16 +70,13 @@
 #define  B_CYAN    46
 #define  B_WHITE   47  
 
-
-
-
-
-
 typedef  struct  {
     std::basic_string<char> QUIT ; 
     std::basic_string<char> EXIT ; 
     std::basic_string<char> BYE  ; 
 }ABORT_SIG  ;  
+
+
 
 std::string  set_colorscheme(int  cs = NORMAL ,  int fc =0x00,  int  bc= 0x00 )  ; 
 void  ice_usage ( char **  ) ; 
@@ -96,13 +95,6 @@ void  _records (
 
 void  cxx_compil() ; 
 
-
-static
-void Rfx_ERR(std::basic_ifstream <char> & ,
-                    std::basic_string<char> msg = NULL ) ; 
-static 
-void Wfx_ERR(std::basic_ofstream <char> & ,
-                    std::basic_string<char> msg =  NULL ) ; 
 
 
 #endif  
