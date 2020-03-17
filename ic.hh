@@ -5,8 +5,11 @@
 #include <fstream>
 #include <stdlib.h>
 
-#define  ARCH_TYPE   (sizeof(void* ) * 0x008)
-#define  ASM_H       "/usr/include/x86_64-linux-gnu/asm/unistd_"
+#define  ARCH_BYTE          (sizeof(void*) * 0x0008)  
+#define  ASM64_H "/usr/include/x86_64-linux-gnu/asm/unistd_64.h" 
+#define  ASM32_H "/usr/include/x86_64-linux-gnu/asm/unistd_32.h" 
+
+
 #define  BIN_LOC_           "bin/"
 #define  PREPROC_INCLUDE    "defsrc/def_preproc"
 #define  STATMENTS_STARTUP  "defsrc/statement_startup" 
@@ -19,7 +22,7 @@
 
 #define  STDNAMESPACE_ARGS  "--using-std"
 #define  STDNAMESPACE       "using namespace std;"
-
+#define  SHOW               "cat "
 #define  IC_RUNTIME_ERROR   0X03 
 #define  IC_VERSION         "v0.0.1"
 #define  CXX                "g++ "
@@ -78,15 +81,30 @@ typedef  struct  {
 
 
 
+void   args_helper  ( int & , char ** ,  bool &);  
+
 std::string  set_colorscheme(int  cs = NORMAL ,  int fc =0x00,  int  bc= 0x00 )  ; 
+
+
 void  ice_usage ( char **  ) ; 
+
+
 void  print_header_intro(std::basic_string<char>  = IC_VERSION); 
+
+
 void  init_entry_point(std::vector<std::basic_string<char>>& ); 
+
+
 void  cursor_filter (std::basic_string<char>&  ,int & ) ;
+
+
 void  init_stack_preprocess_head (
         std::vector <std::basic_string<char>> & , 
         bool&) ; 
+
+
 bool  processor_directive_call(std::basic_string <char>&, std::vector<std::basic_string<char>>&) ;
+
 
 void  _records (
         std::vector<std::basic_string<char>>&  ,

@@ -4,11 +4,15 @@
 #include <map> 
 #include <vector>
 #include <regex>
+#include <cstring>  
+#include <errno.h>
+
+//----------
 #include "ic.hh" 
-#include  <cstring>  
-#include <errno.h>  
 
 using namespace  std::literals  ; 
+
+
 //! print  g++  version information header   
 //! and display utils argument 
 void print_header_intro (std::string  ic_tag_version) { 
@@ -24,7 +28,6 @@ void print_header_intro (std::string  ic_tag_version) {
         i_args_helper++
         ) 
         std::cout <<  i_args_helper->first  <<" \t -- "<< i_args_helper->second << std::endl; 
-
 } 
 
 void  ice_usage ( char  **argv_attribute  ) 
@@ -41,6 +44,17 @@ void  ice_usage ( char  **argv_attribute  )
      
 }
 
+void  args_helper ( int & argc ,  char **argv   , bool & stdnamespace_label)  {
+    if  (argc  == 0x0002 )
+    {
+         std::string args_string { argv[0x001] } ; 
+         if  (args_string == STDNAMESPACE_ARGS )  stdnamespace_label  = true ;
+         if  ( args_string ==  "-h"  ||  args_string  =="--help")
+             ice_usage(argv) ;  
+
+    } 
+    if (argc > 0x0002 ) ice_usage(argv) ; 
+}
 std::string  set_colorscheme ( int style   , int font_color  , int background_color ) {
         
         std::string font_style =  std::to_string(style); 
@@ -52,23 +66,6 @@ std::string  set_colorscheme ( int style   , int font_color  , int background_co
         }else if  ( font_color != 0x00  && background_color!= 0x00) {
             return  COLOR_PREFIX_BEGIN + font_style +";" +std::to_string(font_color) +";"+std::to_string(background_color)+ "m" ;  
         } 
-}
-static  
-void  Rfx_ERR(std::ifstream & r_file ,  std::string  mesg) {
-    if (!r_file) 
-    { 
-        std::cerr <<  mesg << std::endl; 
-        exit(RW_FLUX_ERR) ; 
-    }
-}
-
-static  
-void  Wfx_ERR(std::ofstream & w_file ,  std::string  mesg) {
-    if (!w_file) 
-    { 
-        std::cerr <<  mesg << std::endl; 
-        exit(RW_FLUX_ERR) ; 
-    }
 }
 
 

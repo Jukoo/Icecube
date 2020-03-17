@@ -16,9 +16,10 @@
 #include <fstream>  
 #include <vector>
 
+//---- LINUX  STUFF  
 #if defined(__linux__) 
 #include  <unistd.h>
-#define   ASM_UNISTD   
+#define   __ASM_UNISTD__    
 #endif 
 
 //----
@@ -28,28 +29,45 @@ using namespace  std::literals ;
 
 
 int main  (int argc  ,char  **argv )  { 
-    #if defined(ASM_UNISTD)
-        std::string  asm_header_root = ASM_H+std::to_string(ARCH_TYPE)+".h" ;
-    #endif  
-   //!  arguments handler --->  
-    static bool enable_std_prefix { false } ;  
-   if ( argc == 0x0002) 
-   { 
-       std::string  args  =  argv[0x0001] ; 
 
-       if  ( args ==  STDNAMESPACE_ARGS  )
-           enable_std_prefix = true  ;   
-       
-       if  (args  ==  "--help" ||  args  == "-h" ) 
-             ice_usage(argv) ;            
-   }else if (argc  > 0x002) ice_usage (argv) ; 
-
-  //! end  arguments  hanbler  <--- 
-
-   
     print_header_intro() ;
+
+    //!  display   using namespace  std   
+    //!+ by default it's not  enabled
+    //!+ the user can enabled it by  using  
+    //!+ the flag  "--using-std" ;  
+    static bool enable_std_prefix { false } ;  
+ 
+    args_helper (argc , argv  , enable_std_prefix) ;  
+    //! parse the arguments  on  stdout   
+   
+    //!  only linux OS  are concerned  to this section 
+    //!  that show  ASM syscall  cheetcheat  ...
+    #if defined(__ASM_UNISTD__)
+    int  arch_base_type  {  ARCH_BYTE } ; 
+   
+       if  ( argc  == 0x002 )
+       {  
+            std::string args_str { argv[0x001] } ;  
+            if  ( args_str ==  "--asm_syscall" ) {
+                std::cout  << set_colorscheme(BLINK,0x00,  B_BLUE)  <<"ASM SYSCALL"<< DEFAULT_COLOR << std::endl; 
+                switch ( arch_base_type) {
+                    case  32 : system(SHOW  ASM32_H);break;  
+                    case  64 : system(SHOW  ASM64_H);break; 
+                } 
+            }
+       }
+    #endif  
+   
+
+     
+
+    //!  make visiual alert  that  indicate the user 
+    //!  is using stdandar  namespace   
     if ( enable_std_prefix ) 
         std::cout  << set_colorscheme(BLINK,0x00,  B_RED)  <<"USING NAMESPACE STD"  << DEFAULT_COLOR << std::endl; 
+    
+
     
     ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
   
