@@ -1,4 +1,4 @@
-#ifndef ICXX_H
+#if !defined(ICXX_H)
 #define ICXX_H
 
 #include <string>
@@ -6,20 +6,22 @@
 #include <stdlib.h>
 
 #define  ARCH_BYTE          (sizeof(void*) * 0x0008)  
-#define  ASM64_H "/usr/include/x86_64-linux-gnu/asm/unistd_64.h" 
-#define  ASM32_H "/usr/include/x86_64-linux-gnu/asm/unistd_32.h" 
+#if defined(__linux__)  
+#define  ASM64_H            "/usr/include/x86_64-linux-gnu/asm/unistd_64.h" 
+#define  ASM32_H            "/usr/include/x86_64-linux-gnu/asm/unistd_32.h" 
+
+#define  BIN_LOC_           "/usr/bin/"
+
+#define  PREPROC_INCLUDE    "/usr/share/ice/defsrc/def_preproc"
+#define  STATMENTS_STARTUP  "/usr/share/ice/defsrc/statement_startup" 
 
 
-#define  BIN_LOC_           "bin/"
-#define  PREPROC_INCLUDE    "defsrc/def_preproc"
-#define  STATMENTS_STARTUP  "defsrc/statement_startup" 
-
-
-#define  _MAIN_             "__ice__.cc"
+#define  _MAIN_             "/usr/share/ice/defsrc/__ice__.cc"
 #define  O_FLAG             " -o "
-#define  EXEC               "freeze" 
+#define  EXEC               "ice_freeze" 
 #define  A_OUT              "./bin/"
 
+#endif 
 #define  STDNAMESPACE_ARGS  "--using-std"
 #define  STDNAMESPACE       "using namespace std;"
 #define  SHOW               "cat "

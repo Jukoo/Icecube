@@ -174,7 +174,7 @@ void  _records (
 {
 
     std::string  virtual_cursor  {} ; 
-    std::string   ice {BIN_LOC_ _MAIN_} ;
+    std::string   ice {_MAIN_} ;
    
     // clear the previews record  
     std::ofstream  previews_record_stream  ( ice.c_str()  , std::ios::out| std::ios::trunc) ;  
@@ -240,7 +240,9 @@ void  cxx_compil()  {
     }
     
     
-    system(CXX   BIN_LOC_  _MAIN_  O_FLAG   BIN_LOC_  EXEC);
+    //system(CXX   BIN_LOC_  _MAIN_  O_FLAG   BIN_LOC_  EXEC);
+    system(CXX   _MAIN_  O_FLAG   BIN_LOC_  EXEC);
     //system("./bin/a.out") ;
-    system(A_OUT EXEC) ;
+    //system(A_OUT EXEC) ;
+    system(EXEC) ;
 }

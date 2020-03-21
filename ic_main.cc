@@ -59,9 +59,6 @@ int main  (int argc  ,char  **argv )  {
        }
     #endif  
    
-
-     
-
     //!  make visiual alert  that  indicate the user 
     //!  is using stdandar  namespace   
     if ( enable_std_prefix ) 
@@ -85,7 +82,7 @@ IC:
     while (INTERACTIVE_LOOP) 
     {
         std::cout << prompt  << "  ["  <<  line_count << "]: " ;
-        (void) fflush( stdin) ;
+        (void) fflush(stdin) ;
         std::getline(std::cin ,  ic_cursor_reader) ; 
         if(ic_cursor_reader ==  exit_keys.QUIT || 
            ic_cursor_reader ==  exit_keys.EXIT || 

@@ -1,7 +1,7 @@
 #!/usr/bin/make  
 CXX=g++ 
 CXXFLAG = -Wall  -std=c++17 -Wextra 
-EXEC=icc
+EXEC=ice
 SRC= $(wildcard *.cc)
 OBJ = $(SRC:.cc=.o)
 
