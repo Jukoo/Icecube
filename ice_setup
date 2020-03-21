@@ -5,7 +5,9 @@ set -o errexit
 readonly   PN=$(basename ${0^^}) ; 
 readonly   BasePath=/usr/share/
 readonly   binexec=/usr/bin/
-readonly   RootUID=$((0x000)) 
+readonly   RootUID=$((0x000))
+readonly   user_name=`logname`
+ 
 exe=
 #fetching  executable  from Makefile 
 [[ -f Makefile  ]] &&  { 
@@ -29,7 +31,7 @@ exe=
      }
 }
 
-echo -e  " building ice  main directory  ..." 
+echo -e  "|-> building ice  main directory  ..." 
 sleep $((0x0002))  
 
 default_source  () {
@@ -43,32 +45,33 @@ default_source  () {
             return 0  
         }  
     else  
-        echo  " nothing to do  evrything is oOK ..." 
+        echo  "|-> nothing to do  evrything is oOK ..." 
         exit 0     
     fi
 
 }
 default_source
 test $? -eq  0  && {  
-    echo  "copying source  ->  ${BasePath}$(basename  ${0%%_*})" 
+    echo  "|-> copying source  ->  ${BasePath}$(basename  ${0%%_*})" 
     sleep $((0x0002))  
       if [[ -d  defsrc  ]]   ; then 
         read  -a files  <<< $(echo  `ls  -r  defsrc`)   
-        if [[ ${#files[@]}  -eq $((0x003)) ]] ; then 
+        if [[ ${#files[@]}  -eq $((0x003)) ]] ; then
+         
            
             cp  -R  defsrc ${BasePath}$(basename ${0%%_*})
             test $? -eq 0  && echo -e "[ done ]"
-            
-            #  show tracing  to see what happen   
-            for  file  in ${files[@]} ;  do  
-                echo -e " $file  -> ${BasePath}$(basename ${0%%_*})"
+              #  show tracing  to see what happen   
+            for  file  in ${files[@]} ;  do 
+                `chown  ${user_name}  ${BasePath}${exe}/defsrc/${file}`   
+                echo -e "|->  $file  -> ${BasePath}$(basename ${0%%_*})"
                 sleep  0.5   
             done 
 
         else  
-            echo -e  "something  wrong  :  missing  file "  
-            echo -e  "please report this error  to - >  <funscript@outlook.fr>"
-            echo -e  "or declare an issue  to      - >  <https://github.com/Jukoo/iCe>"  
+            echo -e  "|-> something  wrong  :  missing  file "  
+            echo -e  "|-> please report this error  to - >  <funscript@outlook.fr>"
+            echo -e  "|-> or declare an issue  to      - >  <https://github.com/Jukoo/iCe>"  
             exit  3  
         fi 
 fi
@@ -76,7 +79,15 @@ fi
 
 if  [[  ! -x ${binexec}$exe ]] ; then 
      if [[ -x ${binexec}make ]]  ; then  
-        make all    
+        
+        echo -e  "|-> compiling  from  source  ..." 
+        make  > compile 
+        while read  _cl  ; do 
+            echo  -e  "|->  $_cl"
+            sleep 1  
+        done  <  compile 
+        rm compile  
+
         if [[  -x  $exe  ]]   ; then
             echo -e  "building ..." 
             sleep 2
@@ -85,14 +96,25 @@ if  [[  ! -x ${binexec}$exe ]] ; then
                 echo -e "buil failed ... "
                 exit $?  
             }
+           
+             echo -e  "|-> changing owership to $(logname)..." 
+             sleep 1   
+            `chown  ${user_name}  ${binexec}$exe`
+             test $?  -eq 0   && {
+                echo -e "|-> owner changed ..."
+                echo -e "finish"
+             } ||  {
+                echo  -e "fail : cannot change owernship"
+                exit $? 
+             }
         fi
     else 
         echo "undefined  make "
         exit 3 
     fi
+
 else  
-    echo -e "$exe is already set  ..."
+    echo -e "|-> $exe is already set  ..."
     which $exe  
 fi  
 
-  
