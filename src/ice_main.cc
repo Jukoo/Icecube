@@ -22,10 +22,21 @@
 #define   __ASM_UNISTD__    
 #endif 
 
-//----
-#include "ic.hh" 
+#include "include/arch_bytes.hh" 
+#include "include/ice_info_helper.hh" 
+#include "include/os_conf.hh" 
+#include "include/proc_statement_stack.hh" 
+#include "include/records.hh" 
+#include "include/tty_colors.hh" 
 
 using namespace  std::literals ;  
+
+
+typedef struct    {  
+    std::string   quit  ; 
+    std::string   exit  ; 
+    std::string   bye   ; 
+} ABORT_SIG  ; 
 
 
 int main  (int argc  ,char  **argv )  { 
@@ -66,7 +77,7 @@ int main  (int argc  ,char  **argv )  {
     
 
     
-    ABORT_SIG exit_keys ={"quit",  "exit", "bye"} ; 
+    ABORT_SIG exit_keys = {"quit",  "exit", "bye"} ; 
   
     
     // count  line stdint  -> [ ]
@@ -84,9 +95,9 @@ IC:
         std::cout << prompt  << "  ["  <<  line_count << "]: " ;
         (void) fflush(stdin) ;
         std::getline(std::cin ,  ic_cursor_reader) ; 
-        if(ic_cursor_reader ==  exit_keys.QUIT || 
-           ic_cursor_reader ==  exit_keys.EXIT || 
-           ic_cursor_reader ==  exit_keys.BYE)  
+        if(ic_cursor_reader ==  exit_keys.quit || 
+           ic_cursor_reader ==  exit_keys.exit || 
+           ic_cursor_reader ==  exit_keys.bye)  
         {
             std::fprintf(stdout  , "exit with Abort SIG %p  %c", &exit_keys , 0x00a)  ;    
             exit(SIG_INTENTION) ;  

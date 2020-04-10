@@ -1,9 +1,12 @@
+busterIce/
 a.out
 icc
 ic.o
-ic_main.o
+ice_main.o
 bin/*
-
+src/old/
+src/ice
+src/*.o
 defsrc/*
 TODO
 .swp

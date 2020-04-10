@@ -1,23 +1,18 @@
 #!/usr/bin/make  
-CXX=g++ 
-CXXFLAG = -Wall  -std=c++17 -Wextra 
-EXEC=ice
-SRC= $(wildcard *.cc)
-OBJ = $(SRC:.cc=.o)
+export CXX=g++ 
+export CXXFLAG = -Wall  -std=c++17 -Wextra  
+SOURCE=src
+EXEC=$(SOURCE)/ice  
 
 all : $(EXEC)
 
-$(EXEC): $(OBJ)
-	$(CXX)  -o $@ $^ $(CXXFLAG)  
+$(EXEC):
+	(cd  $(SOURCE)  && $(MAKE))  
 
-ic_main.o: ic.hh
-
-%.o :  %.cc 
-	$(CXX) -o  $@  -c  $< $(CXXFLAG) 
 	
-.PHONY  : clean  mproper 
-clean  : 
-	rm  *.o 
+.PHONY  : clean  mproper  $(EXEC) 
+clean  :
+	@(cd  $(SOURCE) && $(MAKE) $@)  
 
 mproper: clean 
-	rm  $(EXEC)
+	@(cd  $(SOURCE)  && $(MAKE) $@)  
