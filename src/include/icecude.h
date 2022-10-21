@@ -7,10 +7,12 @@
 #ifndef ICE_CUBE 
 #define ICE_CUBE 
 
-#include <libtcc.h>  
-/* ice cude wrap libtcc  api*/
+#include <libtcc.h> 
+
+/* icecube wrap libtcc  api*/
 #ifdef LIBTCCAPI 
 
+#define ICECUBE 
 typedef  enum  { 
     OUT_MEM  = 1 ,   
     OUT_EXE , 
@@ -20,10 +22,13 @@ typedef  enum  {
 } OUT_MODE  ;  
 
 typedef  struct  TCCState IceCube  ; 
-typedef  IceCube   *(*ice_t)(void) ;                            // tcc_new  
+typedef  IceCube   *(*ice_t)(void) ;                           // tcc_new  
 typedef  int   (*outmode)(IceCube  *  , int __output_mode)  ;  // tcc_set_output_type  
+typedef  void  (*drop)(IceCube * ) ;                           // tcc_delete 
 
-/* generic  signature   of char buffer   acte like  template  
+
+    
+/* generic  function that  have same  signature :   
  * -> tcc_add_file 
  * -> tcc_get_symbol
  * -> tcc_add_library 
@@ -31,11 +36,10 @@ typedef  int   (*outmode)(IceCube  *  , int __output_mode)  ;  // tcc_set_output
  * -> tcc_add_sysinclude
  * -> tcc_add_include_path
  * -> tcc_set_lib_path
- * -> 
+ * -> tcc_output_file  
  */
 typedef  int   (*__generic_cb__)(IceCube * , const char *  )  ; 
 
-#define ICECUBE 
 #endif 
 
 #define MAX_SBUFF  0xfe 
@@ -56,6 +60,7 @@ typedef struct  {
     "\t -v  version :\tsee current version\n"\
     "\t -h  help    :\tthis help\n"\
    
+#define  DEF_OUTFILE_EXE  "a.out"  
 
 #define  MCPYDUMB(dest,src)\
     if (memcpy(dest , src , MAX_SBUFF) != dest ) {\
@@ -64,14 +69,18 @@ typedef struct  {
 }
 
 
-/* handle  argument  option  on stdout */  
+/* Parse  Argument  flags */  
 ICECUBE void argument_parser ( int __argc  , char *const *argv  ,IcecubeFlagOptionHdl  *  __ifoh) ;  
 
-
+/* Display usage of the program */ 
 ICECUBE static void  display_usage(char *restrict  programme_basename) ;
 
-ICECUBE IceCube * create_context_from( ice_t  ); 
+/* Wrap up  Tcc compilation context creation */ 
+ICECUBE IceCube * create_context_from( ice_t  );  
+
+
 ICECUBE int set_out_mode  (  outmode  , OUT_MODE ) ; 
 ICECUBE int append_file  ( __generic_cb__   , char  const *)  ; 
-
+ICECUBE int output_exec  ( __generic_cb__   , const  char *  ) ;
+ICECUBE void leave_context  ( drop )  ;
 #endif 

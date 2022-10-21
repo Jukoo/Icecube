@@ -23,8 +23,6 @@ static void display_usage(char  *programme_basename ) {
 }
 
 
-
-
 void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * ifoh ) { 
     int option_parser  ; 
  
@@ -61,9 +59,11 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
                 break;   
             case 'v': 
                     printf(VERSION) ;  
+                    exit(EXIT_SUCCESS) ; 
                     break; 
             case 'h':
                     display_usage(basename) ;  
+                    exit(EXIT_SUCCESS) ; 
                     break ;  
             default  : 
                     display_usage(basename)  ; 
@@ -85,6 +85,7 @@ IceCube    *create_context_from(  ice_t   context_origine )  {
 } 
 
 int set_out_mode  (   outmode  __outm  ,  OUT_MODE  __om   ) { 
+   printf ("[sm] sc  %p \n" , __shared_context ) ;   
     return  __outm(__shared_context ,  __om   ) ; 
 
 }
@@ -93,4 +94,19 @@ int append_file  (  __generic_cb__  cb_callback , char  const *  filetarget) {
    return  cb_callback(__shared_context ,  filetarget) ;  
 } 
 
+void leave_context  ( drop __context   )  {
+   __context(__shared_context)  ;
+   __shared_context =  ( void * )0 ;  
+} 
 
+int  output_exec  ( __generic_cb__  cb_callback  , const char  *__output_file_exec  ){
+    char  exec_filename[MAX_SBUFF]  =  DEF_OUTFILE_EXE ;   
+
+    if  ( __output_file_exec !=  (void * )  0 && strlen(__output_file_exec) > 0 )  
+    { 
+        memset(exec_filename , 0  , MAX_SBUFF ) ; 
+        memcpy (exec_filename , __output_file_exec ,  MAX_SBUFF) ; 
+    }
+   
+    return  cb_callback(__shared_context ,  exec_filename  ) ;  
+}
