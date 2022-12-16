@@ -1,8 +1,11 @@
-#!/usr/bin/make  
-export CXX=g++ 
-export CXXFLAG = -Wall  -std=c++17 -Wextra  
+#!/usr/bin/make 
+
+
+export CC=cc  
+export LTCC_FLAGS = -ltcc  
+export CFLAGS= -Wall    -Wextra   -pedantic  -I ./include  $(LTCC_FLAGS)    
 SOURCE=src
-EXEC=$(SOURCE)/ice  
+EXEC=$(SOURCE)/icecube  
 
 all : $(EXEC)
 
@@ -14,5 +17,5 @@ $(EXEC):
 clean  :
 	@(cd  $(SOURCE) && $(MAKE) $@)  
 
-mproper: clean 
+mproper: clean $(EXEC)  
 	@(cd  $(SOURCE)  && $(MAKE) $@)  

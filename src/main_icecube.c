@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <errno.h> 
 
-#include "include/icecude.h"  
+#include "icecude.h"  
 
 int
 main (int argc , char **argv )  { 
