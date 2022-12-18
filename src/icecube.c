@@ -13,6 +13,7 @@
 #include  <assert.h>
 
 #include "icecude.h"
+#include "generic.h" 
 
 IceCube *__shared_context  = (void * )0 ;  
 
@@ -72,6 +73,26 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
         }
     }
 }
+
+ICECUBE  Ice_t * begin ( Ice_t *  ice){ 
+    ice->context  = ( void * ) 0  ; 
+    
+    ice->set_new_context = tcc_new ; 
+    ice->set_output_mode =  tcc_set_output_type; 
+    ice->end_context  = tcc_delete  ; 
+     
+    ice->context = ice->set_new_context()  ; 
+    
+    if ( ice->context  ==  ( void * )0  ) 
+    {
+        fprintf(stderr, " ICEBREAKER : Fail to start new  context\n") ; 
+        exit(EXIT_FAILURE) ; 
+    } 
+    
+    return ice ;   
+}
+
+
 
 IceCube    *create_context_from(  ice_t   context_origine )  { 
      __shared_context    =  context_origine()  ;

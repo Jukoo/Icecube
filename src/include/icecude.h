@@ -12,7 +12,7 @@
 /* icecube wrap libtcc  api*/
 #ifdef LIBTCCAPI 
 
-#define ICECUBE 
+#define ICECUBE  
 typedef  enum  { 
     OUT_MEM  = 1 ,   
     OUT_EXE , 
@@ -22,11 +22,13 @@ typedef  enum  {
 } OUT_MODE  ;  
 
 typedef  struct  TCCState IceCube  ; 
-typedef  IceCube   *(*ice_t)(void) ;                           // tcc_new  
-typedef  int   (*outmode)(IceCube  *  , int __output_mode)  ;  // tcc_set_output_type  
-typedef  void  (*drop)(IceCube * ) ;                           // tcc_delete 
 
-
+typedef struct   { 
+    IceCube  *context ; 
+    IceCube  *(*set_new_context) (void ) ; 
+    int  (*set_output_mode)(IceCube  *  , OUT_MODE  ) ; 
+    void (*end_context) (IceCube *  )     
+}Ice_t ;
     
 /* generic  function that  have same  signature :   
  * -> tcc_add_file 
@@ -40,6 +42,15 @@ typedef  void  (*drop)(IceCube * ) ;                           // tcc_delete
  */
 typedef  int   (*__generic_cb__)(IceCube * , const char *  )  ; 
 
+
+ICECUBE  Ice_t  * begin ( Ice_t * __ice_t_struct) ;  
+
+
+typedef  IceCube   *(*ice_t)(void) ;                           // tcc_new  
+typedef  int   (*outmode)(IceCube  *  , int __output_mode)  ;  // tcc_set_output_type  
+typedef  void  (*drop)(IceCube * ) ;                           // tcc_delete 
+
+
 #endif 
 
 #define MAX_SBUFF  0xfe 
@@ -50,17 +61,6 @@ typedef struct  {
     char  libname[MAX_SBUFF]  ; 
     
 } IcecubeFlagOptionHdl  ;  
-
-#define   VERSION "ICECUBE  version 0.0.1 - Copyright(c) 2022 , Umar\n"
-
-#define   HELP  "General options : \n"\
-    "\t -o  outfile :\tset output filename\n"\
-    "\t -i  infile  :\tset input  filename\n"\
-    "\t -l  libpath :\tset library path \n"\
-    "\t -v  version :\tsee current version\n"\
-    "\t -h  help    :\tthis help\n"\
-   
-#define  DEF_OUTFILE_EXE  "a.out"  
 
 #define  MCPYDUMB(dest,src)\
     if (memcpy(dest , src , MAX_SBUFF) != dest ) {\

@@ -4,6 +4,7 @@
 #include <errno.h> 
 
 #include "icecude.h"  
+#include "generic.h" 
 
 int
 main (int argc , char **argv )  { 
@@ -11,7 +12,11 @@ main (int argc , char **argv )  {
     IcecubeFlagOptionHdl  ifoh  ; 
     argument_parser(argc , argv ,  &ifoh) ;
 
-    (IceCube*) create_context_from(tcc_new) ; 
+    Ice_t icube ; 
+    (void * ) begin(&icube) ; 
+
+    printf("icecontex -> %p \n" , ( void * )  icube.context) ;
+    exit(EXIT_FAILURE) ;  
       
     
     if(set_out_mode(tcc_set_output_type , OUT_EXE )  != 0 )  
