@@ -27,9 +27,8 @@ typedef struct   {
     IceCube  *context ; 
     IceCube  *(*set_new_context) (void ) ; 
     int  (*set_output_mode)(IceCube  *  , OUT_MODE  ) ; 
-    void (*end_context) (IceCube *  )     
-}Ice_t ;
-    
+    void (*release) (IceCube *  )   ; 
+
 /* generic  function that  have same  signature :   
  * -> tcc_add_file 
  * -> tcc_get_symbol
@@ -40,11 +39,13 @@ typedef struct   {
  * -> tcc_set_lib_path
  * -> tcc_output_file  
  */
-typedef  int   (*__generic_cb__)(IceCube * , const char *  )  ; 
+    int   (*__generic_cb__)(IceCube * , const char *  )  ; 
 
+
+}Ice_t ;
+    
 
 ICECUBE  Ice_t  * begin ( Ice_t * __ice_t_struct) ;  
-
 
 typedef  IceCube   *(*ice_t)(void) ;                           // tcc_new  
 typedef  int   (*outmode)(IceCube  *  , int __output_mode)  ;  // tcc_set_output_type  
@@ -68,6 +69,13 @@ typedef struct  {
     exit(EXIT_FAILURE);\
 }
 
+typedef enum   {  
+    ICSTDOUT = 1  , 
+    ICSTDERR 
+} ICESTREAM ;
+
+static void icemesg(ICESTREAM  iceout  , char  const *mesg ,  ... ) ; 
+
 
 /* Parse  Argument  flags */  
 ICECUBE void argument_parser ( int __argc  , char *const *argv  ,IcecubeFlagOptionHdl  *  __ifoh) ;  
@@ -75,12 +83,9 @@ ICECUBE void argument_parser ( int __argc  , char *const *argv  ,IcecubeFlagOpti
 /* Display usage of the program */ 
 ICECUBE static void  display_usage(char *restrict  programme_basename) ;
 
-/* Wrap up  Tcc compilation context creation */ 
-ICECUBE IceCube * create_context_from( ice_t  );  
+void * release ( Ice_t * ) ; 
 
 
-ICECUBE int set_out_mode  (  outmode  , OUT_MODE ) ; 
-ICECUBE int append_file  ( __generic_cb__   , char  const *)  ; 
-ICECUBE int output_exec  ( __generic_cb__   , const  char *  ) ;
-ICECUBE void leave_context  ( drop )  ;
+//Add file   
+void  source_file ( Ice_t * , const char *file ) ; 
 #endif 

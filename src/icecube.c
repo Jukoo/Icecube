@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * icecub.h for icecube  - interactive c/cxx environnement 
+ * icecube.h for icecube  - interactive c/cxx environnement 
  * Copyright (C) 2022 , by  Umar <jukoo>  (jUmarB@protonmail.com) 
  */
 
@@ -11,11 +11,12 @@
 #include  <errno.h> 
 #include  <unistd.h>  
 #include  <assert.h>
+#include  <stdarg.h>
 
-#include "icecude.h"
+
+#include "icecube.h"
 #include "generic.h" 
 
-IceCube *__shared_context  = (void * )0 ;  
 
 static void display_usage(char  *programme_basename ) {
     printf(VERSION) ;  
@@ -30,7 +31,7 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
  
     /* string operatrion basename  format   display the programme  name without './' */ 
     char  *basename  = argv[0] ;  
-    if  ( *basename  ==  0x2e && *(basename+1) ==  0x2f)  
+    if  ( *basename  ==  0x2e && *(basename+1) ==  0x2f)   
     {
         size_t  basename_size  = strlen(basename) ; 
         char *bn =  calloc(basename_size , sizeof(char)) ;  
@@ -45,6 +46,8 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
         display_usage(basename) ;  
         exit(EXIT_FAILURE) ; 
     } 
+    
+     
 
     while  ( (option_parser = getopt(argc , argv , FLAGS ) ) != -1 ) 
     {
@@ -74,61 +77,72 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
     }
 }
 
+ static void icemesg (  ICESTREAM  outstream   , char const  * mesg ,  ... ) { 
+
+      
+     va_list ap ; 
+     va_start ( ap , mesg )  ; 
+     
+     vdprintf (  outstream  , mesg ,  ap ) ;
+     
+     if ( errno != 0 ) 
+     {
+        //! check if use  the right stream file  
+        if (  outstream == STDOUT_FILENO )
+            dprintf(STDERR_FILENO , "WARNING!!::  Wrong strem broadcast\n") ;  
+            
+     
+        dprintf(STDERR_FILENO, "ICE BROKEN : <%i> :  <%s> \n", errno ,  strerror(errno) )  ;  
+     }
+    
+     dprintf(outstream, "%c" , 0xa) ;  
+     fflush((void * ) 0 ) ; //! flush  all stream  
+     va_end(ap) ;   
+
+ }  
+
 ICECUBE  Ice_t * begin ( Ice_t *  ice){ 
     ice->context  = ( void * ) 0  ; 
     
     ice->set_new_context = tcc_new ; 
     ice->set_output_mode =  tcc_set_output_type; 
-    ice->end_context  = tcc_delete  ; 
+    ice->release  = tcc_delete  ; 
      
     ice->context = ice->set_new_context()  ; 
     
     if ( ice->context  ==  ( void * )0  ) 
     {
-        fprintf(stderr, " ICEBREAKER : Fail to start new  context\n") ; 
+        icemesg(ICSTDERR ,  "ICE CUBE: Fail to start new context\n") ; 
         exit(EXIT_FAILURE) ; 
     } 
     
     return ice ;   
 }
 
+void *release(Ice_t* ice  )  {  
 
+    ice->release(ice->context) ; 
+    if ( ice->context  != ( void * )0 ) 
+    {
+        //! force to set  invalid  address 
+        //NOTE : AVOID USING DOUBLE FREE  CORRUPTION  
+        ice->context   =  ( void *) 0  ; 
+        
+    } 
 
-IceCube    *create_context_from(  ice_t   context_origine )  { 
-     __shared_context    =  context_origine()  ;
-     if ( __shared_context  ==  ( void * ) 0 ) 
-     {
-         perror("IceCube context Error ! ") ; 
-         exit(EXIT_FAILURE) ; 
-     } 
-
-     return  __shared_context ;  
-
+    return  ice->context ;   
 } 
 
-int set_out_mode  (   outmode  __outm  ,  OUT_MODE  __om   ) { 
-   printf ("[sm] sc  %p \n" , __shared_context ) ;   
-    return  __outm(__shared_context ,  __om   ) ; 
 
-}
 
-int append_file  (  __generic_cb__  cb_callback , char  const *  filetarget) {  
-   return  cb_callback(__shared_context ,  filetarget) ;  
-} 
+void  source_file ( Ice_t * ice  , const char * file)  { 
 
-void leave_context  ( drop __context   )  {
-   __context(__shared_context)  ;
-   __shared_context =  ( void * )0 ;  
-} 
+    //!TODO : CHECK FILE ENTRY  IF IS VALID ... 
 
-int  output_exec  ( __generic_cb__  cb_callback  , const char  *__output_file_exec  ){
-    char  exec_filename[MAX_SBUFF]  =  DEF_OUTFILE_EXE ;   
-
-    if  ( __output_file_exec !=  (void * )  0 && strlen(__output_file_exec) > 0 )  
-    { 
-        memset(exec_filename , 0  , MAX_SBUFF ) ; 
-        memcpy (exec_filename , __output_file_exec ,  MAX_SBUFF) ; 
-    }
+     
+    ice->__generic_cb__ = tcc_add_file ;  
    
-    return  cb_callback(__shared_context ,  exec_filename  ) ;  
+    ice->__generic_cb__( ice->context ,  file )  ;
+
+    
 }

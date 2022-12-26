@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <errno.h> 
 
-#include "icecude.h"  
+#include "icecube.h"  
 #include "generic.h" 
 
 int
@@ -13,30 +13,14 @@ main (int argc , char **argv )  {
     argument_parser(argc , argv ,  &ifoh) ;
 
     Ice_t icube ; 
-    (void * ) begin(&icube) ; 
+    (void * ) begin(&icube) ;  //! initialize the  context  
+                               
+    icube.set_output_mode(icube.context ,  OUT_EXE) ; 
+   
+    source_file(&icube, ifoh.file_input)  ;  
 
-    printf("icecontex -> %p \n" , ( void * )  icube.context) ;
-    exit(EXIT_FAILURE) ;  
-      
+    release(&icube) ;
     
-    if(set_out_mode(tcc_set_output_type , OUT_EXE )  != 0 )  
-    {
-        perror("output mode error  ! ") ; 
-        exit(EXIT_FAILURE) ; 
-    } 
-        
-    if(append_file(tcc_add_file , ifoh.file_input ) ==-1  ) 
-    {
-        perror("ICECUBE  compile time error" ) ; 
-        return EXIT_FAILURE ;  
-    }
-    
-    if ( output_exec (tcc_output_file  ,  NULL ) != 0 )  
-    {
-        perror("ICECUBE  compile time error") ;
-        return EXIT_FAILURE  ;  
-    }
+    return EXIT_SUCCESS ;  
 
-    leave_context (tcc_delete)  ; 
-    return EXIT_SUCCESS ; 
 } 
