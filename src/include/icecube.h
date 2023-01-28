@@ -26,7 +26,7 @@ typedef  struct  TCCState IceCube  ;
 typedef struct   { 
     IceCube  *context ; 
     IceCube  *(*set_new_context) (void ) ; 
-    int  (*set_output_mode)(IceCube  *  , OUT_MODE  ) ; 
+    int  (*set_output_mode)(IceCube  *  ,  OUT_MODE  ) ; 
     void (*release) (IceCube *  )   ; 
 
 /* generic  function that  have same  signature :   
@@ -41,9 +41,7 @@ typedef struct   {
  */
     int   (*__generic_cb__)(IceCube * , const char *  )  ; 
 
-
 }Ice_t ;
-    
 
 ICECUBE  Ice_t  * begin ( Ice_t * __ice_t_struct) ;  
 
@@ -76,7 +74,6 @@ typedef enum   {
 
 static void icemesg(ICESTREAM  iceout  , char  const *mesg ,  ... ) ; 
 
-
 /* Parse  Argument  flags */  
 ICECUBE void argument_parser ( int __argc  , char *const *argv  ,IcecubeFlagOptionHdl  *  __ifoh) ;  
 
@@ -87,5 +84,8 @@ void * release ( Ice_t * ) ;
 
 
 //Add file   
-void  source_file ( Ice_t * , const char *file ) ; 
+static void   is_file (const char  * __file ) ; 
+static int  file_size ( const char  *__file) ;  
+void  source_file ( Ice_t * , const char *file ) ;  
+
 #endif 

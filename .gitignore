@@ -11,3 +11,5 @@ defsrc/*
 TODO
 .swp
 README.md.backup 
+build/
+src/test.c 

@@ -13,10 +13,12 @@ main (int argc , char **argv )  {
     argument_parser(argc , argv ,  &ifoh) ;
 
     Ice_t icube ; 
-    (void * ) begin(&icube) ;  //! initialize the  context  
-                               
+    (void * ) begin(&icube) ;  //! initialize the  context   
+    
+     
+    //!  OUT_EXE  -> a.out      
     icube.set_output_mode(icube.context ,  OUT_EXE) ; 
-   
+     
     source_file(&icube, ifoh.file_input)  ;  
 
     release(&icube) ;

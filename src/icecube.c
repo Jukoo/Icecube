@@ -12,7 +12,8 @@
 #include  <unistd.h>  
 #include  <assert.h>
 #include  <stdarg.h>
-
+#include  <signal.h>  
+#include  <sys/stat.h>  
 
 #include "icecube.h"
 #include "generic.h" 
@@ -48,7 +49,7 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
     } 
     
      
-
+    //!TODO :  ADD LONG OPTIONS  
     while  ( (option_parser = getopt(argc , argv , FLAGS ) ) != -1 ) 
     {
         switch (option_parser) 
@@ -79,7 +80,6 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
 
  static void icemesg (  ICESTREAM  outstream   , char const  * mesg ,  ... ) { 
 
-      
      va_list ap ; 
      va_start ( ap , mesg )  ; 
      
@@ -90,7 +90,6 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
         //! check if use  the right stream file  
         if (  outstream == STDOUT_FILENO )
             dprintf(STDERR_FILENO , "WARNING!!::  Wrong strem broadcast\n") ;  
-            
      
         dprintf(STDERR_FILENO, "ICE BROKEN : <%i> :  <%s> \n", errno ,  strerror(errno) )  ;  
      }
@@ -99,7 +98,8 @@ void argument_parser ( int argc , char *const *argv ,  IcecubeFlagOptionHdl  * i
      fflush((void * ) 0 ) ; //! flush  all stream  
      va_end(ap) ;   
 
- }  
+}  
+
 
 ICECUBE  Ice_t * begin ( Ice_t *  ice){ 
     ice->context  = ( void * ) 0  ; 
@@ -122,6 +122,7 @@ ICECUBE  Ice_t * begin ( Ice_t *  ice){
 void *release(Ice_t* ice  )  {  
 
     ice->release(ice->context) ; 
+    
     if ( ice->context  != ( void * )0 ) 
     {
         //! force to set  invalid  address 
@@ -134,15 +135,42 @@ void *release(Ice_t* ice  )  {
 } 
 
 
+static void  is_file ( const char * file_entry  )   {  
+    if (access(file_entry  , F_OK)  !=  0 )  
+    { 
+         icemesg(STDERR_FILENO ,  "FileNotFound  <%s>\n" , file_entry) ; 
+         raise(SIGABRT) ; 
+    }
+    
+    (void)  file_size(file_entry) ;  
+} 
 
+static int file_size  ( const  char *file_entry )  {
+    struct  stat  file_entry_buff  ;  
+    if ( stat(file_entry  ,  &file_entry_buff)  != 0 )  
+    { 
+        icemesg(STDERR_FILENO , "FileIsEmpty <%s> \n" , file_entry )  ; 
+        raise(SIGABRT) ;  
+    }
+
+    return  file_entry_buff.st_size ; 
+
+
+}
 void  source_file ( Ice_t * ice  , const char * file)  { 
 
     //!TODO : CHECK FILE ENTRY  IF IS VALID ... 
 
      
-    ice->__generic_cb__ = tcc_add_file ;  
-   
-    ice->__generic_cb__( ice->context ,  file )  ;
-
+    ice->__generic_cb__ = tcc_add_file ; //! FIXME  : libtcc tcc: error: file 'crt1.o' not found  !!    
+      
+    is_file(file) ; 
+    int   add_status  = ice->__generic_cb__( ice->context ,  file ) ;  
+    if ( add_status == -1 )   
+    {
+        icemesg(STDERR_FILENO  , "ICECUBE : not able to  compile this file -> <%s> \n", file) ; 
+        raise(SIGABRT) ; 
+    }
+    
     
 }
